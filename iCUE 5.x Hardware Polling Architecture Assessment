@@ -1,0 +1,184 @@
+# iCUE 5.x Hardware Polling Architecture Assessment
+
+**Vendor:** Corsair Gaming  
+**Component:** iCUE 5.x Hardware Monitoring Subsystem  
+**Report Type:** Architectural Stability & Contention Analysis  
+**Status:** Observational / Technical Assessment  
+
+---
+
+## Summary
+
+Recent builds of iCUE 5.x introduce structural changes to the hardware monitoring subsystem, including integration of a third-party hardware access library (CPUID/ZCPU v1.3.4.4) alongside existing vendor-specific low-level drivers.
+
+Event log analysis indicates architectural expansion of the polling stack rather than consolidation under a centralized arbitration mechanism.
+
+While localized stability may improve, cross-process contention remains theoretically possible in concurrent monitoring environments.
+
+---
+
+## Scope
+
+This assessment covers:
+
+- Service installation events
+- Kernel-mode driver registration
+- Monitoring behavior under concurrent polling conditions
+- Logical sensor index stability
+
+No reverse engineering of proprietary binaries was performed.  
+All conclusions are based on observable system behavior and Windows Event Log records.
+
+---
+
+## Evidence
+
+### 1. User-Mode Services Installed
+
+The following services were registered under the `LocalSystem` account:
+
+- Corsair Device Listing Service  
+- Corsair iCUE Update Service  
+- Corsair Service (Auto Start)  
+- Corsair CpuIdService  
+- Corsair Device Control Service  
+
+**Observations:**
+
+- Elevated execution context (LocalSystem)
+- Modular service separation
+- Primary service configured for Auto Start
+- Supporting services configured for Demand Start
+
+---
+
+### 2. Third-Party Kernel Driver Integration
+
+Service Name: cpuz160
+
+Location: C:\ProgramData\CPUID Software\sdk<random_id>
+
+Type: Kernel Mode Driver
+
+Start Type: Demand Start
+
+
+
+**Characteristics:**
+
+- Confirms CPUID/ZCPU SDK integration (v1.3.4.4)
+- Randomized directory provisioning
+- Multiple installation events recorded
+
+---
+
+### 3. Vendor Low-Level Driver (Coexisting)
+
+Driver: CorsairLLAccess64.sys
+
+Type: Kernel Mode Driver
+
+Start Type: Auto Start
+
+
+
+- Hash-based service naming observed
+- Multiple registration events logged
+- Operates in parallel with CPUID-based driver
+
+This indicates coexistence of multiple kernel-level hardware access paths.
+
+---
+
+### 4. System Service Configuration Modification
+
+The startup type of Background Intelligent Transfer Service (BITS) was changed from:
+
+Demand Start → Auto Start
+
+This ensures update-related persistence without user initiation.
+
+---
+
+## Architectural Model
+
+The current monitoring architecture appears to consist of:
+
+1. User-mode orchestration services  
+2. Vendor-specific low-level kernel driver  
+3. CPUID/ZCPU hardware abstraction driver  
+
+No observable evidence indicates centralized inter-process arbitration for shared hardware resources (e.g., SMBus).
+
+---
+
+## Observed Behavior: GPU Sensor Index Instability
+
+### Symptom
+
+In multi-monitoring configurations (e.g., concurrent polling by multiple applications):
+
+- GPU fan values intermittently associate with different logical sensor indices
+- Sensor count remains constant
+- Index-to-value mapping changes transiently
+
+Physical hardware configuration remains unchanged.
+
+---
+
+## Technical Interpretation
+
+The behavior is consistent with:
+
+- Timing-sensitive enumeration
+- Concurrent register polling
+- Absence of shared synchronization primitives
+
+It is not consistent with:
+
+- Physical fan reordering
+- Firmware reassignment
+- GPU driver-level fan control changes
+
+The instability appears limited to software-level mapping.
+
+---
+
+## Deterministic vs Timing-Dependent Stability
+
+Observed behavior suggests:
+
+- Stable operation when polling intervals do not overlap
+- Transient mapping inconsistencies when polling operations coincide
+
+This indicates timing-dependent stability rather than enforced architectural synchronization.
+
+---
+
+## Impact Assessment
+
+| Environment | Behavior |
+|------------|----------|
+| Single Monitoring Application | Stable |
+| Multiple Concurrent Monitoring Applications | Potential transient sensor mapping inconsistencies |
+
+No data corruption or permanent hardware effects were observed.
+
+---
+
+## Conclusion
+
+The transition to a third-party hardware abstraction layer represents a pragmatic stabilization strategy.
+
+However, the coexistence of multiple kernel-level access drivers and absence of centralized arbitration leaves cross-process contention theoretically possible in concurrent monitoring scenarios.
+
+Full architectural resolution would require coordinated hardware access governance rather than reliance on polling interval alignment.
+
+---
+
+## Disclosure Notes
+
+- This report documents observable system behavior.
+- No proprietary code was redistributed.
+- No exploitability claim is made.
+- This is a stability and architectural assessment.
