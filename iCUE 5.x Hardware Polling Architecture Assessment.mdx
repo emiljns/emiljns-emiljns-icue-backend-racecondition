@@ -9,7 +9,7 @@
 
 ## Summary
 
-Recent builds of iCUE 5.x introduce structural changes to the hardware monitoring subsystem, including integration of a third-party hardware access library (CPUID/ZCPU v1.3.4.4) alongside existing vendor-specific low-level drivers.
+Recent builds of iCUE 5.x introduce structural changes to the hardware monitoring subsystem, including integration of a third party hardware access library (CPUID/ZCPU v1.3.4.4) alongside existing vendor specific low level drivers.
 
 Event log analysis indicates architectural expansion of the polling stack rather than consolidation under a centralized arbitration mechanism.
 
@@ -22,7 +22,7 @@ While localized stability may improve, cross-process contention remains theoreti
 This assessment covers:
 
 - Service installation events
-- Kernel-mode driver registration
+- Kernel mode driver registration
 - Monitoring behavior under concurrent polling conditions
 - Logical sensor index stability
 
@@ -33,7 +33,7 @@ All conclusions are based on observable system behavior and Windows Event Log re
 
 ## Evidence
 
-### 1. User-Mode Services Installed
+### 1. User Mode Services Installed
 
 The following services were registered under the `LocalSystem` account:
 
@@ -52,7 +52,7 @@ The following services were registered under the `LocalSystem` account:
 
 ---
 
-### 2. Third-Party Kernel Driver Integration
+### 2. Third Party Kernel Driver Integration
 
 Service Name: cpuz160
 
@@ -72,7 +72,7 @@ Start Type: Demand Start
 
 ---
 
-### 3. Vendor Low-Level Driver (Coexisting)
+### 3. Vendor Low Level Driver (Coexisting)
 
 Driver: CorsairLLAccess64.sys
 
@@ -84,9 +84,9 @@ Start Type: Auto Start
 
 - Hash-based service naming observed
 - Multiple registration events logged
-- Operates in parallel with CPUID-based driver
+- Operates in parallel with CPUID based driver
 
-This indicates coexistence of multiple kernel-level hardware access paths.
+This indicates coexistence of multiple kernel level hardware access paths.
 
 ---
 
@@ -96,7 +96,7 @@ The startup type of Background Intelligent Transfer Service (BITS) was changed f
 
 Demand Start → Auto Start
 
-This ensures update-related persistence without user initiation.
+This ensures update related persistence without user initiation.
 
 ---
 
@@ -108,7 +108,7 @@ The current monitoring architecture appears to consist of:
 2. Vendor-specific low-level kernel driver  
 3. CPUID/ZCPU hardware abstraction driver  
 
-No observable evidence indicates centralized inter-process arbitration for shared hardware resources (e.g., SMBus).
+No observable evidence indicates centralized inter process arbitration for shared hardware resources (e.g., SMBus).
 
 ---
 
@@ -120,7 +120,7 @@ In multi-monitoring configurations (e.g., concurrent polling by multiple applica
 
 - GPU fan values intermittently associate with different logical sensor indices
 - Sensor count remains constant
-- Index-to-value mapping changes transiently
+- Index to value mapping changes transiently
 
 Physical hardware configuration remains unchanged.
 
@@ -130,7 +130,7 @@ Physical hardware configuration remains unchanged.
 
 The behavior is consistent with:
 
-- Timing-sensitive enumeration
+- Timing sensitive enumeration
 - Concurrent register polling
 - Absence of shared synchronization primitives
 
@@ -138,7 +138,7 @@ It is not consistent with:
 
 - Physical fan reordering
 - Firmware reassignment
-- GPU driver-level fan control changes
+- GPU driver level fan control changes
 
 The instability appears limited to software-level mapping.
 
@@ -168,9 +168,9 @@ No data corruption or permanent hardware effects were observed.
 
 ## Conclusion
 
-The transition to a third-party hardware abstraction layer represents a pragmatic stabilization strategy.
+The transition to a third party hardware abstraction layer represents a pragmatic stabilization strategy.
 
-However, the coexistence of multiple kernel-level access drivers and absence of centralized arbitration leaves cross-process contention theoretically possible in concurrent monitoring scenarios.
+However, the coexistence of multiple kernel level access drivers and absence of centralized arbitration leaves cross process contention theoretically possible in concurrent monitoring scenarios.
 
 Full architectural resolution would require coordinated hardware access governance rather than reliance on polling interval alignment.
 
