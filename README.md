@@ -1,28 +1,29 @@
-# Corsair iCUE 5 – Configuration Write Loop & CPUID Deadlock  
-**Security Advisory SA-2025-001 | Independent Analysis by Emil**
+# Corsair iCUE 5 Configuration Write Loop and CPUID Service Deadlock  
+SA-2025-001 | Independent Technical Analysis by Emil
 
-iCUE 5.x contains a critical backend flaw causing a high frequency write loop on `config.cuecfg` and log files.  
-This leads to excessive disk I/O, SSD wear, and a dependent service (CPUID) failing to initialize, resulting in loss of temperature and fan control.
+iCUE 5.x contains a backend defect that triggers a high frequency write loop affecting `config.cuecfg` and associated log files.  
+This behavior results in excessive disk activity, accelerated SSD or NVMe wear, and failure of the dependent CPUID service to initialize properly. In affected systems this may result in loss of temperature telemetry and fan or pump control.
+
+This document is classified as a Technical Advisory. No security boundary violation or privilege escalation has been demonstrated.
 
 ---
 
-## 🔥 Key Problems
+## Key Problems
+
 - Continuous rewrite loop on `config.cuecfg`
-- ~1 GB/hour unnecessary disk writes
-- NVMe/SSD wear amplification
-- CPUID service stuck in **Starting**
+- Approximately 1 GB per hour unnecessary disk writes
+- SSD or NVMe endurance amplification
+- CPUID service stuck in Starting state
 - Cooling curves fail to load
-- Sensor mapping corruption (swapped CPU/GPU sensors)
-- No rollback mechanism, no archived builds
+- Sensor mapping inconsistencies in some configurations
+- No official rollback archive available
 
 ---
 
-## 📄 Full Security Advisory  
-See: **[SA-2025-001.md](SA-2025-001.md)**
+## Full Technical Advisory  
+See: **SA-2025-001.md**
 
 ---
 
-## 📅 Disclosure Timeline  
-See: **[DISCLOSURE-TIMELINE.md](DISCLOSURE-TIMELINE.md)**
-
----
+## Disclosure Timeline  
+See: **DISCLOSURE-TIMELINE.md**
