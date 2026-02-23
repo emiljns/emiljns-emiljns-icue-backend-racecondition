@@ -21,7 +21,7 @@ This document is classified as a Technical Advisory. No security boundary violat
 ---
 
 ## Full Technical Advisory  
-See: **SA-2025-001.md**
+See: **TA-2025-001.md**
 
 ---
 
