@@ -1,5 +1,5 @@
 # Corsair iCUE 5 Configuration Write Loop and CPUID Service Deadlock  
-SA-2025-001 | Independent Technical Analysis by Emil
+TA-2025-001 | Independent Technical Analysis by Emil
 
 iCUE 5.x contains a backend defect that triggers a high frequency write loop affecting `config.cuecfg` and associated log files.  
 This behavior results in excessive disk activity, accelerated SSD or NVMe wear, and failure of the dependent CPUID service to initialize properly. In affected systems this may result in loss of temperature telemetry and fan or pump control.
