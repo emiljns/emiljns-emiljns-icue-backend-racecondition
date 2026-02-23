@@ -21,9 +21,10 @@ This document is classified as a Technical Advisory. No security boundary violat
 ---
 
 ## Full Technical Advisory  
-See: **TA-2025-001.md**
+## Full Technical Advisory  
+See: [TA-2025-001.md](TA-2025-001.md)
 
 ---
 
 ## Disclosure Timeline  
-See: **DISCLOSURE-TIMELINE.md**
+See: [DISCLOSURE-TIMELINE.md](DISCLOSURE-TIMELINE.md)
